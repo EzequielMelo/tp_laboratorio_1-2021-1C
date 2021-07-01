@@ -58,26 +58,38 @@ void askForEmployeeData(char name[], char lastName[], float *salary, int *sector
 	char auxLastName[LIMIT_CHARACTERS];
 	float auxSalary;
 	int auxSector;
-	utn_getString(auxName,
+	int nameCorrect;
+	int lastnameCorrect;
+	int salaryCorrect;
+	int sectorCorrect;
+
+	nameCorrect=getStringChar(auxName,
 			      "Ingrese el NOMBRE del empleado:\n",
                   "Error el NOMBRE ha superado el limite de caracteres\n",
-				  LIMIT_CHARACTERS, ATTEMPS);
-	utn_getString(auxLastName,
+				  LIMIT_CHARACTERS, ATTEMPS, 1);
+	lastnameCorrect=getStringChar(auxLastName,
 			      "Ingrese el APELLIDO del empleado:\n",
 				  "Error el APELLIDO ha superado el limite de caracteres\n",
-				  LIMIT_CHARACTERS, ATTEMPS);
-	utn_getFlotante(&auxSalary,
+				  LIMIT_CHARACTERS, ATTEMPS, 1);
+	salaryCorrect=getFloatNumber(&auxSalary,
 			        "Ingrese el SALARIO del empleado:\n",
 					"Error el SALARIO ingresado no corresponde\n",
 					0, 300000, ATTEMPS);
-	utn_getEntero(&auxSector,
+	sectorCorrect=getIntNumber(&auxSector,
 			      "Ingrese el SECTOR en el que trabaja el empleado\n",
 				  "Error SECTOR incorrecto\n",
 				  0, 100, ATTEMPS);
-	strcpy(name,auxName);
-	strcpy(lastName,auxLastName);
-	*salary = auxSalary;
-	*sector = auxSector;
+	if(nameCorrect!=-1 && lastnameCorrect!=-1 && salaryCorrect!=-1 && sectorCorrect!=-1)
+	{
+		strcpy(name,auxName);
+		strcpy(lastName,auxLastName);
+		*salary = auxSalary;
+		*sector = auxSector;
+		puts("Datos cargados con exito");
+	}else
+	{
+		puts("Empleado no cargado error en un campo");
+	}
 }
 
 
@@ -87,12 +99,25 @@ int addEmployee(Employee* list, int len, int id, char name[],char lastName[],flo
 	int rtn = -1;
 	index = searchFreePosition(list, len);
 
+	int i;
+	int maxid=0;
+	for(i=0; i<len; i++)
+	{
+		if(list[i].isEmpty == FALSE)
+		{
+			if(list[i].id > maxid)
+			{
+				maxid = list[i].id;
+			}
+		}
+	}
+
 	if(list != NULL && len > 0)
 	{
 		if(index != -1)
 		{
 			askForEmployeeData(name, lastName, &salary, &sector);
-			list[index].id = index + 1;
+			list[index].id = maxid + 1;
 			strcpy(list[index].name,name);
 			strcpy(list[index].lastName,lastName);
 			list[index].salary = salary;

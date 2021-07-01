@@ -18,7 +18,6 @@
 #define SIZE 1000
 #define TRUE 1
 #define FALSE 0
-#define LIMITE_BUFFER 4096
 #define LIMIT_CHARACTERS 51
 #define ATTEMPS 2
 
@@ -43,7 +42,7 @@ int main(void)
 	do
 	{
 		setbuf(stdout,NULL);
-		answer = utn_getEntero(&option,
+		answer = getIntNumber(&option,
 				"Seleccione una opcion\n1-ALTA empleado\n2-MODIFICAR empleado\n3-BAJA empleado\n4-INFORMAR\n5-SALIR del programa",
 				"Opcion INCORRECTA\nIngrese una opcion valida\n",
 				1, 5 ,ATTEMPS);
@@ -53,45 +52,42 @@ int main(void)
 			{
 			case 1:
 				r = addEmployee(arrayEmployees, SIZE, id, name, lastName, salary, sector);
-				if(r != -1)
+				if(r == -1)
 				{
-					printf("Empleado Cargado con exito\n");
-				}else
-				{
-					printf("ERROR lista completa no se pueden añadir mas empleados\n");
+					printf("Error en la carga\n");
 				}
 			break;
 			case 2:
-				auxIndex = findEmployeebyId(arrayEmployees, SIZE, id);
 				if(searchTakenPosition(arrayEmployees, SIZE) != FALSE &&
-				   !utn_getEntero(&id,"Ingrese el id del empleado que desea MODIFICAR\n",
+				   !getIntNumber(&id,"Ingrese el id del empleado que desea MODIFICAR\n",
 				   "Error id incorrecto\n",
 				   0, 1000, 3) &&
-				   printEmployee(arrayEmployees[id-1]) == 0 &&
-				   !utn_getEntero(&subOption, "Que desea modificar?\n1-Nombre\n2-Apellido\n3-Salario\n4-Sector","opcion INCORRECTA\n",1,4,ATTEMPS))
+				   (auxIndex = findEmployeebyId(arrayEmployees, SIZE, id)) != -1 &&
+				   printEmployee(arrayEmployees[auxIndex]) == 0 &&
+				   !getIntNumber(&subOption, "Que desea modificar?\n1-Nombre\n2-Apellido\n3-Salario\n4-Sector","opcion INCORRECTA\n",1,4,ATTEMPS))
 				{
 					switch(subOption)
 					{
 					case 1:
-						if(!utn_getString(name,
+						if(!getStringChar(name,
 								"Escriba el nuevo nombre: \n",
 								"Error el NOMBRE ha superado el limite de caracteres\n",
-								LIMIT_CHARACTERS, ATTEMPS))
+								LIMIT_CHARACTERS, ATTEMPS, 1))
 						{
 							strcpy(arrayEmployees[auxIndex].name, name);
 						}
 					break;
 					case 2:
-						if(!utn_getString(lastName,
+						if(!getStringChar(lastName,
 								"Escriba el nuevo apellido: \n",
 								"Error el APELLIDO ha superado el limite de caracteres\n",
-								LIMIT_CHARACTERS, ATTEMPS))
+								LIMIT_CHARACTERS, ATTEMPS, 1))
 						{
 							strcpy(arrayEmployees[auxIndex].lastName, lastName);
 						}
 					break;
 					case 3:
-						if(!utn_getFlotante(&salary,
+						if(!getFloatNumber(&salary,
 								"Escriba el nuevo salario: \n",
 								"Error el SALARIO incorrecto\n",
 								0, 300000, ATTEMPS))
@@ -100,7 +96,7 @@ int main(void)
 						}
 					break;
 					case 4:
-						if(!utn_getEntero(&sector,
+						if(!getIntNumber(&sector,
 								"Escriba el nuevo sector: \n",
 								"Error el SECTOR incorrecto\n",
 								0, 100, ATTEMPS))
@@ -116,11 +112,11 @@ int main(void)
 			break;
 			case 3:
 				if(searchTakenPosition(arrayEmployees, SIZE) != FALSE &&
-					!utn_getEntero(&id,"Ingrese el id del empleado que desea ELIMINAR\n",
+					!getIntNumber(&id,"Ingrese el id del empleado que desea ELIMINAR\n",
 					"Error id incorrecto\n",
 					0, 1000, ATTEMPS) &&
-					printEmployee(arrayEmployees[id-1]) == 0 &&
-					findEmployeebyId(arrayEmployees, SIZE, id) != -1 &&
+					(auxIndex=findEmployeebyId(arrayEmployees, SIZE, id)) != -1 &&
+					printEmployee(arrayEmployees[auxIndex]) == 0 &&
 					!removeEmployee(arrayEmployees, SIZE, id))
 				{
 					printf("Empleado removido con EXITO\n");
@@ -131,17 +127,17 @@ int main(void)
 			break;
 			case 4:
 				if(searchTakenPosition(arrayEmployees, SIZE) != FALSE &&
-				   !utn_getEntero(&subOption, "Que desea INFORMAR?\n1-Listado ORDENADO por APELLIDO\n2-Listado ORDENADO por SECTOR\n3-Salarios y sus PROMEDIOS","opcion INCORRECTA\n",1, 3, ATTEMPS))
+				   !getIntNumber(&subOption, "Que desea INFORMAR?\n1-Listado ORDENADO por APELLIDO\n2-Listado ORDENADO por SECTOR\n3-Salarios y sus PROMEDIOS","opcion INCORRECTA\n",1, 3, ATTEMPS))
 				{
 					switch(subOption)
 					{
 					case 1:
-						utn_getEntero(&order,"Como desea ORDENAR los empleados?\n1-Ascendente(A a Z)\n2-Descendente (Z a A)","opcion INCORRECTA\n", 1, 2, ATTEMPS);
+						getIntNumber(&order,"Como desea ORDENAR los empleados?\n1-Ascendente(A a Z)\n2-Descendente (Z a A)","opcion INCORRECTA\n", 1, 2, ATTEMPS);
 						sortEmployeesbyLastName(arrayEmployees, SIZE, order);
 						printEmployees(arrayEmployees, SIZE);
 					break;
 					case 2:
-						utn_getEntero(&order,"Como desea ORDENAR los empleados?\n1-Menor a mayor\n2-Mayor a menor","opcion INCORRECTA\n", 1, 2, ATTEMPS);
+						getIntNumber(&order,"Como desea ORDENAR los empleados?\n1-Menor a mayor\n2-Mayor a menor","opcion INCORRECTA\n", 1, 2, ATTEMPS);
 						sortEmployeesbySector(arrayEmployees, SIZE, order);
 						printEmployees(arrayEmployees, SIZE);
 					break;

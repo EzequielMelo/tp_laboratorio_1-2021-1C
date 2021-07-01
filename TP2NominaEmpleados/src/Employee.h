@@ -11,7 +11,6 @@
 #define SIZE 1000
 #define TRUE 1
 #define FALSE 0
-#define LIMITE_BUFFER 4096
 #define LIMIT_CHARACTERS 51
 #define ATTEMPS 2
 
